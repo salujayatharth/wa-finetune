@@ -1,0 +1,75 @@
+# WhatsApp Style Transfer - Training Configuration
+# For use with Unsloth + QLoRA on Llama 3.1 8B
+
+# =============================================================================
+# Model Configuration
+# =============================================================================
+base_model: "unsloth/Meta-Llama-3.1-8B-bnb-4bit"
+max_seq_length: 2048
+load_in_4bit: true
+
+# =============================================================================
+# LoRA Configuration
+# =============================================================================
+# Higher rank (32) for capturing complex conversational style
+# Alpha = 2x rank is a common rule of thumb
+lora_r: 32
+lora_alpha: 64
+lora_dropout: 0.05
+
+# Target all attention and MLP layers for comprehensive adaptation
+target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+  - gate_proj
+  - up_proj
+  - down_proj
+
+# =============================================================================
+# Training Configuration
+# =============================================================================
+# Single epoch - multi-epoch on chat data often causes overfitting
+num_train_epochs: 1
+
+# Batch size of 4 with 4 gradient accumulation = effective batch size of 16
+per_device_train_batch_size: 4
+gradient_accumulation_steps: 4
+
+# Standard LoRA learning rate
+learning_rate: 2.0e-4
+
+# Constant LR with warmup works well for fine-tuning
+lr_scheduler_type: "constant"
+warmup_ratio: 0.1
+
+# Use bf16 for better precision (requires Ampere+ GPU)
+bf16: true
+
+# Enable gradient checkpointing to reduce memory usage
+gradient_checkpointing: true
+
+# =============================================================================
+# Logging & Checkpointing
+# =============================================================================
+logging_steps: 10
+save_steps: 500
+eval_steps: 500
+output_dir: "./outputs"
+
+# =============================================================================
+# Data Paths
+# =============================================================================
+train_data: "data/training/train.jsonl"
+val_data: "data/training/val.jsonl"
+
+# =============================================================================
+# Export Configuration
+# =============================================================================
+# Export to GGUF for Ollama deployment
+export_gguf: true
+
+# Q5_K_M offers best quality/size tradeoff
+# Options: q4_k_m, q5_k_m, q8_0, f16
+gguf_quantization: "q5_k_m"

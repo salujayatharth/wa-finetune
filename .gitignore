@@ -1,0 +1,116 @@
+# WhatsApp Style Transfer LLM - Git Ignore
+# =========================================
+
+# =============================================================================
+# Data - IMPORTANT: Never commit personal WhatsApp data
+# =============================================================================
+data/raw/
+data/processed/
+data/training/
+*.db
+*.sqlite
+msgstore.db
+ChatStorage.sqlite
+
+# Redaction logs (may contain PII)
+redaction_log.jsonl
+
+# =============================================================================
+# Model outputs
+# =============================================================================
+outputs/
+*.gguf
+*.bin
+*.safetensors
+*.pt
+*.pth
+
+# Checkpoints
+checkpoint-*/
+lora_adapter/
+
+# =============================================================================
+# Python
+# =============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# =============================================================================
+# IDE and editors
+# =============================================================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# =============================================================================
+# OS files
+# =============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# =============================================================================
+# Jupyter notebooks
+# =============================================================================
+.ipynb_checkpoints/
+*.ipynb
+
+# =============================================================================
+# Logs and temporary files
+# =============================================================================
+*.log
+*.tmp
+*.temp
+logs/
+wandb/
+
+# =============================================================================
+# Analysis outputs (optional - uncomment if you want to track these)
+# =============================================================================
+# analysis/
+# *.json
+
+# =============================================================================
+# Secrets and credentials
+# =============================================================================
+.env
+.env.local
+*.pem
+*.key
+credentials.json
+secrets.yaml

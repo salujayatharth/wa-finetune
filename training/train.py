@@ -150,15 +150,20 @@ def main():
 
     # Set Llama 3.1 chat template if not already set
     if tokenizer.chat_template is None:
-        tokenizer.chat_template = """{% set loop_messages = messages %}{% for message in loop_messages %}{% set content = '<|start_header_id|>' + message['role'] + '<|end_header_id|>\n\n'+ message['content'] | trim + '<|eot_id|>' %}{% if loop.index0 == 0 %}{% set content = bos_token + content %}{% endif %}{{ content }}{% endfor %}{{ '<|start_header_id|>assistant<|end_header_id|>\n\n' }}"""
+        tokenizer.chat_template = """{% set loop_messages = messages %}{% for message in loop_messages %}{% set content = '<|start_header_id|>' + message['role'] + '<|end_header_id|>\n\n'+ message['content'] | trim + '<|eot_id|>' %}{% if loop.index0 == 0 %}{% set content = bos_token + content %}{% endif %}{{ content }}{% endfor %}{% if add_generation_prompt %}{{ '<|start_header_id|>assistant<|end_header_id|>\n\n' }}{% endif %}"""
 
-    # Format function for chat template - returns string per example
-    def format_chat(example):
-        return tokenizer.apply_chat_template(
+    # Preprocess dataset to add "text" column
+    def preprocess_example(example):
+        text = tokenizer.apply_chat_template(
             example["messages"],
             tokenize=False,
             add_generation_prompt=False
         )
+        return {"text": text}
+
+    print("Preprocessing datasets...")
+    dataset["train"] = dataset["train"].map(preprocess_example, remove_columns=["messages"])
+    dataset["validation"] = dataset["validation"].map(preprocess_example, remove_columns=["messages"])
 
     # Setup training arguments
     training_args = TrainingArguments(
@@ -187,7 +192,7 @@ def main():
         tokenizer=tokenizer,
         train_dataset=dataset["train"],
         eval_dataset=dataset["validation"],
-        formatting_func=format_chat,
+        dataset_text_field="text",
         max_seq_length=config['max_seq_length'],
         args=training_args,
     )

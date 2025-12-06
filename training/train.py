@@ -152,17 +152,14 @@ def main():
     if tokenizer.chat_template is None:
         tokenizer.chat_template = """{% set loop_messages = messages %}{% for message in loop_messages %}{% set content = '<|start_header_id|>' + message['role'] + '<|end_header_id|>\n\n'+ message['content'] | trim + '<|eot_id|>' %}{% if loop.index0 == 0 %}{% set content = bos_token + content %}{% endif %}{{ content }}{% endfor %}{{ '<|start_header_id|>assistant<|end_header_id|>\n\n' }}"""
 
-    # Format function for chat template - must return a list for Unsloth
-    def format_chat(examples):
-        texts = []
-        for messages in examples["messages"]:
-            text = tokenizer.apply_chat_template(
-                messages,
-                tokenize=False,
-                add_generation_prompt=False
-            )
-            texts.append(text)
-        return texts
+    # Format function for chat template - returns single string per example
+    def format_chat(example):
+        text = tokenizer.apply_chat_template(
+            example["messages"],
+            tokenize=False,
+            add_generation_prompt=False
+        )
+        return [text]  # Unsloth expects a list
 
     # Setup training arguments
     training_args = TrainingArguments(

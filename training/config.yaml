@@ -15,7 +15,8 @@ load_in_4bit: true
 # Alpha = 2x rank is a common rule of thumb
 lora_r: 32
 lora_alpha: 64
-lora_dropout: 0.05
+# Dropout 0 enables Unsloth fast patching for all layers
+lora_dropout: 0.0
 
 # Target all attention and MLP layers for comprehensive adaptation
 target_modules:
@@ -33,9 +34,10 @@ target_modules:
 # Single epoch - multi-epoch on chat data often causes overfitting
 num_train_epochs: 1
 
-# Batch size of 4 with 4 gradient accumulation = effective batch size of 16
-per_device_train_batch_size: 4
-gradient_accumulation_steps: 4
+# Batch size of 16 with 2 gradient accumulation = effective batch size of 32
+# RTX 5090 has 32GB VRAM - maximize utilization (~24GB target)
+per_device_train_batch_size: 16
+gradient_accumulation_steps: 2
 
 # Standard LoRA learning rate
 learning_rate: 2.0e-4

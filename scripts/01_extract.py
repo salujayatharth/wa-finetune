@@ -143,12 +143,13 @@ def extract_android(db_path: str) -> list[dict]:
         if not timestamp_iso:
             continue
 
-        # Determine chat identifier
-        chat_id = str(row.get('chat_row_id') or row.get('chat_jid', 'unknown'))
-        chat_name = row.get('chat_name') or row.get('chat_jid', '')
+        # Determine chat identifier (sqlite3.Row doesn't have .get())
+        row_keys = row.keys()
+        chat_id = str(row['chat_row_id'] if 'chat_row_id' in row_keys else row['chat_jid'] if 'chat_jid' in row_keys else 'unknown')
+        chat_name = row['chat_name'] if 'chat_name' in row_keys and row['chat_name'] else ''
 
         # Clean up chat name (use JID if no subject)
-        if not chat_name and 'chat_jid' in row.keys():
+        if not chat_name and 'chat_jid' in row_keys:
             chat_name = row['chat_jid']
 
         messages.append({

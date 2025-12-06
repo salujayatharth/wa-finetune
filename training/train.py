@@ -179,6 +179,7 @@ def main():
     print("\nInitializing trainer...")
     trainer = SFTTrainer(
         model=model,
+        tokenizer=tokenizer,
         train_dataset=dataset["train"],
         eval_dataset=dataset["validation"],
         formatting_func=format_chat,
